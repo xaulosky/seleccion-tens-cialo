@@ -84,6 +84,29 @@ details.wbox[open] summary::after{content:"Cerrar ▴"}
 .legend span{display:inline-flex;align-items:center;gap:5px}
 .legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
 
+.agenda-grid{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:18px;align-items:start}
+@media (max-width:900px){.agenda-grid{grid-template-columns:1fr}}
+.dayhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px}
+.slots{list-style:none;margin:0;padding:0;display:grid;border-top:1px solid var(--line)}
+.slot{display:grid;grid-template-columns:64px minmax(0,1fr);gap:12px;padding:8px 0;border-bottom:1px solid var(--line);align-items:start}
+.slot .hr{font-family:var(--mono);font-size:.82rem;color:var(--muted);padding-top:6px}
+.free{color:var(--muted);font-size:.84rem;padding:6px 10px;border:1px dashed var(--line);border-radius:8px}
+.appt{display:grid;gap:8px;padding:10px 12px;border-radius:8px;background:var(--accent-soft);border:1px solid var(--accent);text-align:left;font:inherit;color:inherit;cursor:pointer;width:100%}
+.appt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.appt .top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 12px;align-items:baseline}
+.appt .nm{font-weight:700;font-size:1rem}
+.appt .meta{font-size:.8rem;color:var(--muted)}
+.guion{display:grid;gap:10px}
+.guion h3{margin-bottom:-4px}
+.checks{list-style:none;margin:0;padding:0;display:grid;gap:5px;font-size:.86rem}
+.checks li{display:grid;grid-template-columns:16px minmax(0,1fr);gap:8px}
+.checks li::before{content:"";width:12px;height:12px;border:1.5px solid var(--muted);border-radius:3px;margin-top:4px}
+.next{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.next li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;font-size:.86rem;padding:6px 0;border-bottom:1px solid var(--line)}
+.next .sc{font-family:var(--mono)}
+.status{display:inline-flex;align-items:center;gap:6px;font-size:.76rem;font-weight:700;color:var(--good)}
+.status::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--good)}
+.statusbox{border:1px solid var(--good);border-radius:8px;padding:8px 12px;font-size:.88rem;display:grid;gap:2px}
 .verdict{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:999px;border:1px solid currentColor}
 .v-top{color:var(--good)} .v-mid{color:var(--warn)} .v-low{color:var(--muted)} .v-alt{color:var(--rose)}
 
@@ -135,7 +158,7 @@ tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
   <header>
     <div class="eyebrow">Clínica CIALO · Proceso de selección · 1 oct 2026</div>
     <h1>Selección TENS · 14 postulantes</h1>
-    <p>Puntaje ponderado sobre 10, pensado para una clínica estética y quirúrgica ambulatoria: pabellón menor, esterilización, apoyo en procedimientos y trato con pacientes particulares. Mueve los pesos si el cargo pide otra cosa (por ejemplo, más recepción y ventas).</p>
+    <p>Puntaje ponderado sobre 10, pensado para una clínica estética y quirúrgica ambulatoria: pabellón menor, esterilización (con peso propio), apoyo en procedimientos y trato con pacientes particulares. Mueve los pesos si el cargo pide otra cosa (por ejemplo, más recepción y ventas).</p>
   </header>
 
   <section class="kpis" aria-label="Resumen">
@@ -144,6 +167,8 @@ tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
     <div class="kpi"><b class="num" id="k-priv">0</b><span>con trabajo en clínica o centro privado</span></div>
     <div class="kpi"><b class="num" id="k-disp">0</b><span>declaran disponibilidad inmediata</span></div>
   </section>
+
+  <section class="panel agenda" id="agenda" aria-label="Agenda de entrevistas"></section>
 
   <div class="bench">
     <section class="panel" aria-label="Ranking">
@@ -172,21 +197,21 @@ tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
 <script>
 const DIMS=[
   {k:"exp", n:"Experiencia TENS", w:25, c:"var(--h4)"},
-  {k:"afin",n:"Afinidad CIALO",   w:30, c:"var(--accent)"},
+  {k:"afin",n:"Afinidad CIALO",   w:25, c:"var(--accent)"},
+  {k:"est", n:"Esterilización",   w:15, c:"var(--good)"},
   {k:"pub", n:"Público y admin",  w:15, c:"var(--rose)"},
-  {k:"form",n:"Formación y cursos",w:15,c:"var(--h3)"},
+  {k:"form",n:"Formación y cursos",w:10,c:"var(--h3)"},
   {k:"disp",n:"Disponibilidad y traslado",w:10,c:"var(--warn)"},
   {k:"cv",  n:"Calidad del CV",   w:5,  c:"var(--muted)"}
 ];
-const TAGS=["Pabellón / esterilización","Clínica privada","Atención al público","Paciente crítico","APS / CESFAM","Adulto mayor"];
+const TAGS=["Esterilización","Pabellón","Clínica privada","Atención al público","Paciente crítico","APS / CESFAM","Adulto mayor"];
 
 const C=[
 {id:"ivett",nombre:"Ivett Monje Molines",titulo:"TENS · CFT INACAP (2017)",edad:"29",comuna:"Cabrero (Colicheo)",tel:"+56 9 7380 1110",mail:"monjeivett17@gmail.com",disp:"Inmediata",inmediata:true,
- verdict:["top","Entrevistar primero"],
- resumen:"La mezcla más completa para una clínica ambulatoria privada: 4 años en Integramédica asistiendo procedimientos, esterilización en autoclave en clínica dental y experiencia reciente en recepción, ventas y facturación. Adjunta título y registro en la Superintendencia de Salud.",
- tags:["Pabellón / esterilización","Clínica privada","Atención al público","APS / CESFAM","Adulto mayor"],
- s:{exp:8,afin:9,pub:9,form:7,disp:7,cv:8},
- why:{exp:"~8 años en salud: posta rural 3 años, Integramédica 4 años, dental 5 meses.",afin:"Centro ambulatorio privado, preparación de pacientes, arsenalería y autoclave: calza con procedimientos CIALO.",pub:"Recepcionista, ventas, facturas y planillas Excel (2025–2026).",form:"Título y registro SIS verificables (N° 464119). No lista cursos IAAS/RCP.",disp:"Disponible ya, pero vive en Cabrero (~25 km).",cv:"Ordenado y con respaldo documental."},
+ verdict:["top","Entrevistar primero"], resumen:"La mezcla más completa para una clínica ambulatoria privada: 4 años en Integramédica asistiendo procedimientos, esterilización en autoclave en clínica dental y experiencia reciente en recepción, ventas y facturación. Adjunta título y registro en la Superintendencia de Salud.",
+ tags:["Esterilización","Clínica privada","Atención al público","APS / CESFAM","Adulto mayor"],
+ s:{est:8,exp:8,afin:9,pub:9,form:7,disp:7,cv:8},
+ why:{est:"Autoclave y prelavado de instrumental en clínica dental (2025) y rotación por esterilización en CESFAM.",exp:"~8 años en salud: posta rural 3 años, Integramédica 4 años, dental 5 meses.",afin:"Centro ambulatorio privado, preparación de pacientes, arsenalería y autoclave: calza con procedimientos CIALO.",pub:"Recepcionista, ventas, facturas y planillas Excel (2025–2026).",form:"Título y registro SIS verificables (N° 464119). No lista cursos IAAS/RCP.",disp:"Disponible ya, pero vive en Cabrero (~25 km).",cv:"Ordenado y con respaldo documental."},
  exp:[["2025–2026","Secretaria, recepcionista y ventas","Hormigones Membrillar SPA"],["mar–jul 2025","Asistente dental (arsenalería, autoclave)","Clínica Dental Cabrero"],["2021–2025","TENS Unidad de Cardiología (Holter, ECG, ergometría, eco)","Integramédica, Santiago"],["2018–2021","TENS","Posta de Salud Rural Colicheo"],["2015–2017","Pasantías y cuidados particulares","CESFAM Cabrero · Clínica Adventista"]],
  cursos:["Título TNS Enfermería INACAP (verificable)","Registro Superintendencia de Salud N° 464119"],
  plus:["Experiencia directa en centro médico privado de alto flujo","Esterilización y preparación de sala","Maneja caja, facturas y Excel: sirve también en recepción"],
@@ -195,9 +220,9 @@ const C=[
 {id:"camila",nombre:"Camila Lillo Contreras",titulo:"TENS · CFT Santo Tomás (2019)",edad:"28",comuna:"Los Ángeles",tel:"+56 9 3442 3138",mail:"Camilalillo6@gmail.com",disp:"No indica (trabaja actualmente)",inmediata:false,
  verdict:["top","Entrevistar"],
  resumen:"Cinco años y medio continuos en pabellón y recuperación de anestesia de Clínica Los Andes. Es el perfil quirúrgico privado más estable del grupo y conoce el estándar de una clínica particular de Los Ángeles.",
- tags:["Pabellón / esterilización","Clínica privada","Paciente crítico","Adulto mayor"],
- s:{exp:9,afin:9,pub:4,form:7,disp:5,cv:6},
- why:{exp:"Abr 2021 a hoy en el mismo servicio, más UPC adulto en pandemia.",afin:"Pabellón y recuperación anestésica: ideal para cirugía menor, maxilofacial y vascular.",pub:"No menciona recepción, ventas ni manejo administrativo.",form:"IAAS, protección radiológica, auxiliar de anestesia y RCP.",disp:"Tiene empleo estable; habría que ofrecer algo atractivo.",cv:"Correcto pero escueto en funciones."},
+ tags:["Pabellón","Clínica privada","Paciente crítico","Adulto mayor"],
+ s:{est:4,exp:9,afin:9,pub:4,form:7,disp:5,cv:6},
+ why:{est:"Pabellón implica manejo de material estéril, pero no declara trabajo en esterilización.",exp:"Abr 2021 a hoy en el mismo servicio, más UPC adulto en pandemia.",afin:"Pabellón y recuperación anestésica: ideal para cirugía menor, maxilofacial y vascular.",pub:"No menciona recepción, ventas ni manejo administrativo.",form:"IAAS, protección radiológica, auxiliar de anestesia y RCP.",disp:"Tiene empleo estable; habría que ofrecer algo atractivo.",cv:"Correcto pero escueto en funciones."},
  exp:[["2021–hoy","TENS Recuperación de anestesia y pabellón","Clínica Los Andes"],["ene–abr 2021","TENS cuidados domiciliarios","Siempre Chile SpA"],["sep–dic 2020","TENS UPC adulto (pandemia)","CA Víctor Ríos Ruiz"]],
  cursos:["IAAS","Protección radiológica","Auxiliar de anestesia","RCP"],
  plus:["Estabilidad laboral notable (5+ años)","Experiencia quirúrgica en clínica privada local"],
@@ -206,9 +231,9 @@ const C=[
 {id:"javiera",nombre:"Javiera Gallegos Silva",titulo:"TENS · IP Virginio Gómez (2019)",edad:"30",comuna:"Los Ángeles (Camino El Peral)",tel:"9 8754 0340",mail:"javiera.gallegos@virginiogomez.cl",disp:"Inmediata (según CV)",inmediata:true,
  verdict:["top","Entrevistar"],
  resumen:"TENS de pabellón y esterilización en Clínica Adventista, con pasos previos por urgencias, APS y farmacia. Perfil sólido para el área de procedimientos y central de esterilización.",
- tags:["Pabellón / esterilización","Clínica privada","APS / CESFAM"],
- s:{exp:8,afin:9,pub:4,form:5,disp:7,cv:8},
- why:{exp:"Desde 2019 en varios servicios, mayoritariamente reemplazos.",afin:"Pabellón, recuperación y esterilización actuales en clínica privada.",pub:"Farmacia de atención abierta; sin recepción ni ventas.",form:"No lista cursos ni certificaciones.",disp:"Dice inmediata aunque figura trabajando actualmente.",cv:"Claro, bien redactado, una página."},
+ tags:["Esterilización","Pabellón","Clínica privada","APS / CESFAM"],
+ s:{est:9,exp:8,afin:9,pub:4,form:5,disp:7,cv:8},
+ why:{est:"Trabaja hoy en Pabellón y Esterilización de Clínica Adventista.",exp:"Desde 2019 en varios servicios, mayoritariamente reemplazos.",afin:"Pabellón, recuperación y esterilización actuales en clínica privada.",pub:"Farmacia de atención abierta; sin recepción ni ventas.",form:"No lista cursos ni certificaciones.",disp:"Dice inmediata aunque figura trabajando actualmente.",cv:"Claro, bien redactado, una página."},
  exp:[["actual","TENS Pabellón y Esterilización","Clínica Adventista"],["2022","TENS reemplazo APS","CESFAM Norte"],["2022","TENS reemplazo Urgencias","Hospital Puerto Aysén"],["2021","TENS apoyo COVID, Farmacia CDT","CA Víctor Ríos Ruiz"],["2020","TENS reemplazo Pabellón y Recuperación","Clínica Adventista"],["2019–2020","TENS reemplazo Farmacia CDT","CA Víctor Ríos Ruiz"]],
  cursos:["No informa cursos"],
  plus:["Esterilización vigente: clave para instrumental de procedimientos","Ha trabajado en distintos servicios y regiones"],
@@ -217,9 +242,9 @@ const C=[
 {id:"yanez",nombre:"Constanza Yáñez Díaz",titulo:"TENS · CFT Santo Tomás (2020)",edad:"—",comuna:"Los Ángeles (inferido)",tel:"996009354 / 994171810",mail:"conlanix44@gmail.com",disp:"No indica",inmediata:false,
  verdict:["mid","Buen perfil clínico"],
  resumen:"Seis años en el Complejo Asistencial Víctor Ríos Ruiz (neurología, UTI, UPC adulto e infantil), hoy a contrata. Muchos cursos con nota y está cursando un diplomado en anestesia. Excelente técnica, pero perfil hospitalario.",
- tags:["Paciente crítico","Pabellón / esterilización"],
- s:{exp:9,afin:6,pub:4,form:9,disp:4,cv:5},
- why:{exp:"2020 a hoy en servicios de alta complejidad.",afin:"Manejo de material estéril, procedimientos invasivos y sedación; poco contexto ambulatorio.",pub:"Educación a familiares; sin experiencia comercial.",form:"9 cursos con nota (IAAS, RCP, humanización, seguridad) + diplomado de anestesia en curso.",disp:"Contrata pública vigente: dejarla tiene costo para ella.",cv:"Formulario de 10 páginas, repetitivo."},
+ tags:["Esterilización","Paciente crítico"],
+ s:{est:6,exp:9,afin:6,pub:4,form:9,disp:4,cv:5},
+ why:{est:"Lavado por arrastre, traslado a esterilización y almacenamiento de material estéril en hospital.",exp:"2020 a hoy en servicios de alta complejidad.",afin:"Manejo de material estéril, procedimientos invasivos y sedación; poco contexto ambulatorio.",pub:"Educación a familiares; sin experiencia comercial.",form:"9 cursos con nota (IAAS, RCP, humanización, seguridad) + diplomado de anestesia en curso.",disp:"Contrata pública vigente: dejarla tiene costo para ella.",cv:"Formulario de 10 páginas, repetitivo."},
  exp:[["actual","TENS UPC adulto (contrata)","CA Víctor Ríos Ruiz"],["2021–2022","TENS UPC infantil","CA Víctor Ríos Ruiz"],["2021","TENS UPC adulto","CA Víctor Ríos Ruiz"],["2020–2021","TENS UTI adulto","CA Víctor Ríos Ruiz"],["2020","TENS Neurología","CA Víctor Ríos Ruiz"]],
  cursos:["RCP con DEA (32 h)","Cuidados críticos COVID (20 h)","ESI categorización (30 h)","IAAS (60 h y 20 h)","RCP básica CAVRR (27 h)","Humanización y calidad del trato (24 h)","Seguridad de la atención (2026)","Seguridad de la información (2026)","Diplomado de anestesia (en curso)"],
  plus:["La mejor formación continua del grupo","Diplomado de anestesia útil para procedimientos con sedación"],
@@ -229,8 +254,8 @@ const C=[
  verdict:["mid","Considerar"],
  resumen:"Cuatro años y medio, todos en el sector privado de Los Ángeles: urgencia en Clínica Los Andes (dos periodos), ambulancia y toma de muestras con ECG y Holter en Sanatorio Alemán. Perfil maduro y local, sin pabellón ni esterilización.",
  tags:["Clínica privada"],
- s:{exp:7,afin:7,pub:5,form:4,disp:9,cv:6},
- why:{exp:"Feb 2022 a ago 2026 sin interrupciones largas.",afin:"Clínicas privadas, toma de muestras, ECG, Holter, inyectables IM y preparación de equipo para procedimientos.",pub:"Triage, educación y apoyo emocional a pacientes; sin ventas ni recepción.",form:"No lista cursos ni certificaciones.",disp:"Disponible desde el 15 de agosto y vive en Los Ángeles.",cv:"Buen resumen, pero diseño desordenado y algunas faltas."},
+ s:{est:0,exp:7,afin:7,pub:5,form:4,disp:9,cv:6},
+ why:{est:"No menciona esterilización.",exp:"Feb 2022 a ago 2026 sin interrupciones largas.",afin:"Clínicas privadas, toma de muestras, ECG, Holter, inyectables IM y preparación de equipo para procedimientos.",pub:"Triage, educación y apoyo emocional a pacientes; sin ventas ni recepción.",form:"No lista cursos ni certificaciones.",disp:"Disponible desde el 15 de agosto y vive en Los Ángeles.",cv:"Buen resumen, pero diseño desordenado y algunas faltas."},
  exp:[["oct 2025–ago 2026","TENS Urgencia y triage","Clínica Los Andes ACHS Salud"],["feb–sep 2025","TENS toma de muestras, ECG, Holter","Laboratorio y Centro Médico Sanatorio Alemán"],["feb 2023–dic 2024","Paramédico de traslado en ambulancia","SSM Segurisur Medical"],["feb 2022–feb 2023","TENS Urgencia","Clínica Los Andes"]],
  cursos:["No informa cursos"],
  plus:["Toda su experiencia es en salud privada local","Holter, ECG y toma de muestras: útil en un centro ambulatorio","Clínica Los Andes la volvió a contratar"],
@@ -240,8 +265,8 @@ const C=[
  verdict:["alt","Otro cargo: enfermera"],
  resumen:"Es enfermera titulada, no TENS. Recién egresada con pasos por urgencia de Clínica Los Andes y CECOSF. Conviene considerarla solo si CIALO necesita enfermera (sueroterapia, procedimientos, supervisión), no para el cargo TENS.",
  tags:["Clínica privada","APS / CESFAM","Adulto mayor"],
- s:{exp:5,afin:5,pub:4,form:9,disp:9,cv:7},
- why:{exp:"Experiencia clínica 2025 (probablemente internado) y atención particular.",afin:"Urgencia en clínica privada; sin procedimientos estéticos.",pub:"Tutora universitaria; sin atención comercial.",form:"Título profesional + IAAS 120 h + ACLS 120 h.",disp:"Inmediata y flexible en horario.",cv:"Ordenado, falta detalle de funciones."},
+ s:{est:0,exp:5,afin:5,pub:4,form:9,disp:9,cv:7},
+ why:{est:"No menciona esterilización.",exp:"Experiencia clínica 2025 (probablemente internado) y atención particular.",afin:"Urgencia en clínica privada; sin procedimientos estéticos.",pub:"Tutora universitaria; sin atención comercial.",form:"Título profesional + IAAS 120 h + ACLS 120 h.",disp:"Inmediata y flexible en horario.",cv:"Ordenado, falta detalle de funciones."},
  exp:[["jul–oct 2025","Experiencia clínica","CECOSF Los Carrera"],["mar–jun 2025","Experiencia clínica, Urgencia","Clínica Los Andes"],["—","Tutora de Bioquímica","UdeC Los Ángeles"],["—","Atención de enfermería a domicilio","Particular"]],
  cursos:["IAAS 120 h","ACLS 120 h","Word, Excel, PowerPoint, Canva"],
  plus:["Sobrecalificada para TENS: más autonomía clínica","Disponible ya"],
@@ -251,8 +276,8 @@ const C=[
  verdict:["mid","Considerar"],
  resumen:"Tres años en UPC adulto del Víctor Ríos Ruiz con buen manejo de paciente crítico y asistencia en procedimientos invasivos. Muy clínico y hospitalario; menos cercano al rubro estético.",
  tags:["Paciente crítico","Adulto mayor"],
- s:{exp:7,afin:5,pub:3,form:6,disp:7,cv:8},
- why:{exp:"Oct 2023 a hoy en UPC + 1 año en residencia de salud mental.",afin:"Asistencia en procedimientos invasivos; sin ambulatorio ni privado.",pub:"Sin experiencia de atención al cliente.",form:"RCP, IAAS, precauciones estándar, humanización, norma TBC. Licencia B.",disp:"Dice inmediata aunque trabaja hoy en UPC.",cv:"Claro, con funciones concretas."},
+ s:{est:0,exp:7,afin:5,pub:3,form:6,disp:7,cv:8},
+ why:{est:"No menciona esterilización.",exp:"Oct 2023 a hoy en UPC + 1 año en residencia de salud mental.",afin:"Asistencia en procedimientos invasivos; sin ambulatorio ni privado.",pub:"Sin experiencia de atención al cliente.",form:"RCP, IAAS, precauciones estándar, humanización, norma TBC. Licencia B.",disp:"Dice inmediata aunque trabaja hoy en UPC.",cv:"Claro, con funciones concretas."},
  exp:[["2023–hoy","TENS UPC adulto","CA Víctor Ríos Ruiz"],["2021–2022","Cuidador clínico","Residencia Protegida Wengamen"]],
  cursos:["RCP básico","IAAS para TENS","Precauciones estándar","Humanización en salud","Actualización norma TBC","Licencia clase B"],
  plus:["Manejo de urgencias y paciente inestable","CV bien estructurado"],
@@ -262,8 +287,8 @@ const C=[
  verdict:["mid","Considerar si pesa la atención"],
  resumen:"Recién titulada con un año de reemplazos encadenados en CESFAM Norte. Su diferencial es la atención al público: recepción, ventas, e-commerce e inglés avanzado. Encaja si el cargo mezcla box y trato comercial.",
  tags:["Atención al público","APS / CESFAM"],
- s:{exp:5,afin:4,pub:9,form:6,disp:6,cv:8},
- why:{exp:"Sep 2025 a hoy en reemplazos sucesivos de CESFAM Norte.",afin:"Solo atención primaria.",pub:"Recepcionista, ventas en retail, soporte e-commerce 2 años, inglés avanzado.",form:"RCP y DEA 30 h, IAAS 120 h.",disp:"Termina su reemplazo el 19 de octubre.",cv:"Visual y ordenado; un error de fechas (Paris 2021)."},
+ s:{est:0,exp:5,afin:4,pub:9,form:6,disp:6,cv:8},
+ why:{est:"No menciona esterilización.",exp:"Sep 2025 a hoy en reemplazos sucesivos de CESFAM Norte.",afin:"Solo atención primaria.",pub:"Recepcionista, ventas en retail, soporte e-commerce 2 años, inglés avanzado.",form:"RCP y DEA 30 h, IAAS 120 h.",disp:"Termina su reemplazo el 19 de octubre.",cv:"Visual y ordenado; un error de fechas (Paris 2021)."},
  exp:[["2025–2026","TENS reemplazos (9 periodos)","CESFAM Norte"],["2022–2024","Atención al cliente y soporte e-commerce","Wolfie"],["2022","Testeadora / vendedora","Exprotempo SPA"],["2021","Apoyo navidad","Paris S.A."],["2020","Recepcionista","Hostal Magnolia"]],
  cursos:["RCP y DEA 30 h","IAAS 120 h","Inglés avanzado"],
  plus:["CESFAM Norte la ha recontratado 9 veces seguidas: buena señal de desempeño","Orientación comercial útil para venta de tratamientos"],
@@ -273,8 +298,8 @@ const C=[
  verdict:["mid","Revisar en entrevista"],
  resumen:"Pasó por endoscopia y colonoscopia en Clínica Los Andes y por urgencias del hospital. Cuidado domiciliario complejo (TQT, GTT). El CV es desordenado, con fechas confusas y faltas de ortografía.",
  tags:["Clínica privada","Adulto mayor"],
- s:{exp:5,afin:6,pub:5,form:4,disp:6,cv:3},
- why:{exp:"Varias experiencias cortas 2020–2024, parte antes de titularse.",afin:"Preparación de pacientes para endoscopia en clínica privada.",pub:"Menciona atención al cliente y buena comunicación.",form:"Sin cursos declarados. Inglés intermedio.",disp:"No lo indica.",cv:"Sin orden cronológico, errores de redacción."},
+ s:{est:2,exp:5,afin:6,pub:5,form:4,disp:6,cv:3},
+ why:{est:"Solo pasantía en pabellón de maternidad.",exp:"Varias experiencias cortas 2020–2024, parte antes de titularse.",afin:"Preparación de pacientes para endoscopia en clínica privada.",pub:"Menciona atención al cliente y buena comunicación.",form:"Sin cursos declarados. Inglés intermedio.",disp:"No lo indica.",cv:"Sin orden cronológico, errores de redacción."},
  exp:[["2024","TENS / pasantía urgencias","CA Víctor Ríos Ruiz"],["feb 2022","Paramédico, endoscopia y colonoscopia","Clínica Los Andes"],["jul–dic 2021","Paramédico, paciente neurológico (TQT, GTT)","Hochstetter Instituto de Cuidados"],["2020–2021","Cuidado de adultos mayores","Residencia geriátrica"]],
  cursos:["No informa cursos","Inglés intermedio"],
  plus:["Experiencia en procedimientos ambulatorios privados"],
@@ -284,8 +309,8 @@ const C=[
  verdict:["mid","Perfil mixto"],
  resumen:"Doble título (TENS y técnico en administración). Reemplazos en medicina y cuidados paliativos del hospital entre 2024 y 2025; desde diciembre 2025 trabaja como vendedora. Puede servir para un cargo mixto box/recepción.",
  tags:["Atención al público"],
- s:{exp:5,afin:3,pub:7,form:5,disp:9,cv:6},
- why:{exp:"~1 año sumado de reemplazos hospitalarios.",afin:"Hospitalizados y paliativos; nada ambulatorio.",pub:"Ventas en retail y comida, base administrativa.",form:"Dos títulos técnicos; no lista cursos clínicos.",disp:"Inmediata, Los Ángeles, licencia B.",cv:"Simple y claro."},
+ s:{est:0,exp:5,afin:3,pub:7,form:5,disp:9,cv:6},
+ why:{est:"No menciona esterilización.",exp:"~1 año sumado de reemplazos hospitalarios.",afin:"Hospitalizados y paliativos; nada ambulatorio.",pub:"Ventas en retail y comida, base administrativa.",form:"Dos títulos técnicos; no lista cursos clínicos.",disp:"Inmediata, Los Ángeles, licencia B.",cv:"Simple y claro."},
  exp:[["dic 2025–hoy","Vendedora","Liquimax"],["2024–2025","TENS reemplazos Medicina y Paliativos","Hospital Víctor Ríos Ruiz"],["mar–may 2024","Práctica Urgencia Gineco-obstétrica","Hospital Víctor Ríos Ruiz"],["2021–2023","Atención al cliente y ventas","Paris · China Wok"]],
  cursos:["Técnico Adm. de Empresas mención RR.HH.","Licencia clase B"],
  plus:["Puede cubrir recepción o caja","Disponible de inmediato"],
@@ -295,8 +320,8 @@ const C=[
  verdict:["mid","Considerar"],
  resumen:"Mucha experiencia como cuidadora de adultos mayores y enfermería escolar en La Serena; en Los Ángeles trabajó en Hogar Don Orione. Buen listado de cursos y trae referencias.",
  tags:["Adulto mayor","APS / CESFAM"],
- s:{exp:5,afin:3,pub:5,form:7,disp:7,cv:7},
- why:{exp:"Como TENS desde 2024; antes cuidadora.",afin:"Sin procedimientos ni pabellón fuera de la práctica.",pub:"Curso de trato al usuario y educación a pacientes.",form:"IAAS 120 h, MAIS, trato al usuario, RCP, primeros auxilios, ESI, PNI.",disp:"Inmediata; vive en sector rural.",cv:"Completo, incluye 3 referencias."},
+ s:{est:2,exp:5,afin:3,pub:5,form:7,disp:7,cv:7},
+ why:{est:"Solo preparación de pabellón durante la práctica.",exp:"Como TENS desde 2024; antes cuidadora.",afin:"Sin procedimientos ni pabellón fuera de la práctica.",pub:"Curso de trato al usuario y educación a pacientes.",form:"IAAS 120 h, MAIS, trato al usuario, RCP, primeros auxilios, ESI, PNI.",disp:"Inmediata; vive en sector rural.",cv:"Completo, incluye 3 referencias."},
  exp:[["abr 2025","TENS","Hogar Don Orione, Los Ángeles"],["2024–2025","TENS escolar","Colegio Piorret, La Serena"],["2024","Cuidadora adulto mayor (TENS)","Domicilio, Coquimbo"],["2022–2023","Cuidados adultos mayores","Fundación Antonio Farré"],["2019–2021","Cuidadora adulto mayor","La Serena"]],
  cursos:["IAAS 120 h","MAIS 80 h","Trato al usuario 35 h","RCP y DEA 21 h","Primeros auxilios 80 h","ESI urgencias","IRA infantil","PNI vacunas 30 h","Abordaje TEA"],
  plus:["Trae referencias verificables","Vocación de servicio clara"],
@@ -306,8 +331,8 @@ const C=[
  verdict:["low","Recién egresada"],
  resumen:"Recién titulada. Su única experiencia clínica es la práctica en urgencias de Clínica Los Andes (2025). Tiene formación media en recursos humanos y algo de atención al cliente.",
  tags:["Clínica privada","Atención al público"],
- s:{exp:2,afin:3,pub:6,form:5,disp:7,cv:6},
- why:{exp:"Solo práctica profesional.",afin:"Urgencia en clínica privada como alumna.",pub:"Temporada navideña en Falabella, técnico RR.HH.",form:"Soporte vital básico, RCP/DEA, paliativos, lactancia.",disp:"No lo indica.",cv:"Visual, pero sin RUT, edad ni comuna."},
+ s:{est:0,exp:2,afin:3,pub:6,form:5,disp:7,cv:6},
+ why:{est:"No menciona esterilización.",exp:"Solo práctica profesional.",afin:"Urgencia en clínica privada como alumna.",pub:"Temporada navideña en Falabella, técnico RR.HH.",form:"Soporte vital básico, RCP/DEA, paliativos, lactancia.",disp:"No lo indica.",cv:"Visual, pero sin RUT, edad ni comuna."},
  exp:[["mar–may 2025","Práctica profesional, Urgencias","Clínica Los Andes"],["nov–dic 2024","Asistente temporada navideña","Falabella"],["2019","Práctica RR.HH.","Empresa Perello"]],
  cursos:["Soporte vital básico","RCP y DEA","Cuidados paliativos domiciliarios","Consejería en lactancia","Cuidador primario"],
  plus:["Conoce Clínica Los Andes por su práctica"],
@@ -317,8 +342,8 @@ const C=[
  verdict:["low","Baja afinidad"],
  resumen:"Trayectoria principal en seguridad privada; como TENS tiene prácticas y un puesto en laboratorio desde septiembre 2025. Estudia ingeniería en seguridad privada. Muchos cursos online de 2025.",
  tags:["Adulto mayor"],
- s:{exp:3,afin:3,pub:3,form:7,disp:4,cv:4},
- why:{exp:"Laboratorio desde sep 2025; antes cuidadora y prácticas.",afin:"Nada relacionado con procedimientos ambulatorios.",pub:"Atención como guardia, no clínica.",form:"Muchos cursos: ACLS, IAAS, heridas y ostomías, UCI, hemodiálisis.",disp:"Vive en Mulchén y trabaja y estudia en paralelo.",cv:"Desordenado, con errores de tipeo."},
+ s:{est:0,exp:3,afin:3,pub:3,form:7,disp:4,cv:4},
+ why:{est:"No menciona esterilización.",exp:"Laboratorio desde sep 2025; antes cuidadora y prácticas.",afin:"Nada relacionado con procedimientos ambulatorios.",pub:"Atención como guardia, no clínica.",form:"Muchos cursos: ACLS, IAAS, heridas y ostomías, UCI, hemodiálisis.",disp:"Vive en Mulchén y trabaja y estudia en paralelo.",cv:"Desordenado, con errores de tipeo."},
  exp:[["sep 2025–hoy","Laboratorio","CA Víctor Ríos Ruiz"],["mar–jun 2025","Práctica profesional, Urgencias","Hospital de Mulchén"],["2024–2025","Guardia / monitor CCTV","Inacap Los Ángeles"],["2023","Cuidadora adulto mayor (SNG, VVP)","Domicilio"],["2018–2024","Guardia de seguridad","Mall, UDP, hospital"]],
  cursos:["ACLS 120 h","Curación avanzada de heridas y ostomías 40 h","IAAS 80 h","UCI paciente crítico 130 h","Hemodiálisis 80 h","Atención adulto mayor 240 h","OS-10 vigente"],
  plus:["Curación avanzada de heridas podría servir en postoperatorios"],
@@ -328,24 +353,37 @@ const C=[
  verdict:["low","Información insuficiente"],
  resumen:"CV muy breve. Una sola experiencia de cinco meses en Fundación Quiéreme con adultos mayores. Cursos de urgencia y forense sin horas ni fechas.",
  tags:["Adulto mayor"],
- s:{exp:2,afin:2,pub:3,form:5,disp:6,cv:3},
- why:{exp:"Ago 2025 a ene 2026.",afin:"Sin relación con procedimientos.",pub:"No hay evidencia.",form:"RCP, IAAS, ACLS, prehospitalaria, autopsia y pericias forenses.",disp:"No lo indica.",cv:"Sin correo, sin año de titulación, formato básico."},
+ s:{est:0,exp:2,afin:2,pub:3,form:5,disp:6,cv:3},
+ why:{est:"No menciona esterilización.",exp:"Ago 2025 a ene 2026.",afin:"Sin relación con procedimientos.",pub:"No hay evidencia.",form:"RCP, IAAS, ACLS, prehospitalaria, autopsia y pericias forenses.",disp:"No lo indica.",cv:"Sin correo, sin año de titulación, formato básico."},
  exp:[["ago 2025–ene 2026","Técnico de atención directa","Fundación Quiéreme"]],
  cursos:["RCP","IAAS","ACLS","Atención prehospitalaria (CAPREB)","Autopsia","Pericias forenses"],
  plus:["Formación con mención en urgencia"],
  ojo:["No entrega correo ni año de titulación","Experiencia muy limitada"]}
 ];
 
+const DIA={fecha:"Viernes 2 de octubre de 2026",corto:"vie 2 oct",desde:9*60,hasta:13*60,paso:30};
+const AGENDA=[
+ {id:"ivett",hora:"10:00",dur:30,nota:"Contactada por teléfono el 1 oct.",
+  preguntas:["¿Qué autoclave usaste en la clínica dental y cómo controlabas cada ciclo (indicadores químicos y biológicos, registro)?","¿Por qué saliste de Integramédica?","¿Cómo resolverías el traslado diario desde Cabrero?"]},
+ {id:"yanez",hora:"10:30",dur:30,nota:"Agendada el 1 oct.",
+  preguntas:["¿Qué te haría dejar tu contrata en el hospital?","¿En qué horario cursas el diplomado de anestesia y cuándo termina?","¿Has preparado material para esterilización fuera del lavado por arrastre?"]}
+];
+const COMUNES=["Disponibilidad horaria, incluidos sábados","Fecha en que podría empezar","Expectativa de renta líquida","Traer título, registro en Superintendencia de Salud y certificados IAAS y RCP"];
+const hm=m=>String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
+const toMin=h=>{const [a,b]=h.split(":").map(Number);return a*60+b;};
+AGENDA.forEach(a=>{const c=C.find(x=>x.id===a.id); if(!c) return; const fin=hm(toMin(a.hora)+a.dur);
+  c.estado={corto:`Entrevista ${DIA.corto} · ${a.hora}`,largo:`${a.nota} Entrevista el ${DIA.fecha.toLowerCase()}, de ${a.hora} a ${fin}.`};});
+
 let W={}; DIMS.forEach(d=>W[d.k]=d.w);
 let sel="ivett", filter=null;
-try{const s=JSON.parse(localStorage.getItem("cialo-w")||"null"); if(s) W={...W,...s};}catch(e){}
+try{const s=JSON.parse(localStorage.getItem("cialo-w2")||"null"); if(s) W={...W,...s};}catch(e){}
 
 const total=c=>{const sw=DIMS.reduce((a,d)=>a+W[d.k],0)||1; return DIMS.reduce((a,d)=>a+c.s[d.k]*W[d.k],0)/sw;};
 const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 const heat=v=>v>=9?"var(--h4)":v>=7?"var(--h3)":v>=5?"var(--h2)":v>=3?"var(--h1)":"var(--h0)";
 
 function kpis(){
-  document.getElementById("k-pab").textContent=C.filter(c=>c.tags.includes("Pabellón / esterilización")).length;
+  document.getElementById("k-pab").textContent=C.filter(c=>c.tags.includes("Esterilización")||c.tags.includes("Pabellón")).length;
   document.getElementById("k-priv").textContent=C.filter(c=>c.tags.includes("Clínica privada")).length;
   document.getElementById("k-disp").textContent=C.filter(c=>c.inmediata).length;
 }
@@ -355,7 +393,7 @@ function weights(){
   DIMS.forEach(d=>document.getElementById("w-"+d.k).addEventListener("input",e=>{W[d.k]=+e.target.value;document.getElementById("o-"+d.k).textContent=W[d.k];save();render();}));
   document.getElementById("reset").onclick=()=>{DIMS.forEach(d=>{W[d.k]=d.w;document.getElementById("w-"+d.k).value=d.w;document.getElementById("o-"+d.k).textContent=d.w;});save();render();};
 }
-function save(){try{localStorage.setItem("cialo-w",JSON.stringify(W));}catch(e){}}
+function save(){try{localStorage.setItem("cialo-w2",JSON.stringify(W));}catch(e){}}
 function chips(){
   const el=document.getElementById("chips");
   el.innerHTML=[`<button class="chip" type="button" data-t="" aria-pressed="${!filter}">Todas</button>`].concat(TAGS.map(t=>`<button class="chip" type="button" data-t="${esc(t)}" aria-pressed="${filter===t}">${esc(t)}</button>`)).join("");
@@ -371,10 +409,10 @@ function render(){
   document.getElementById("rank").innerHTML=list.map(({c,t})=>{
     const pos=r.findIndex(x=>x.c.id===c.id)+1;
     const segs=DIMS.map(d=>`<i style="width:${(c.s[d.k]*W[d.k]/sw)*10}%;background:${d.c}" title="${d.n}: ${c.s[d.k]}"></i>`).join("");
-    return `<li><button class="row${c.id===sel?" sel":""}" type="button" data-id="${c.id}"><span class="pos">${pos}</span><span class="who"><span class="n">${esc(c.nombre)}</span><span class="t">${esc(c.titulo)}</span><span class="stack">${segs}</span></span><span class="score">${t.toFixed(1)}</span></button></li>`;
+    return `<li><button class="row${c.id===sel?" sel":""}" type="button" data-id="${c.id}"><span class="pos">${pos}</span><span class="who"><span class="n">${esc(c.nombre)}</span>${c.estado?`<span class="status">${esc(c.estado.corto)}</span>`:`<span class="t">${esc(c.titulo)}</span>`}<span class="stack">${segs}</span></span><span class="score">${t.toFixed(1)}</span></button></li>`;
   }).join("")||`<li class="muted" style="padding:8px">Nadie tiene esa experiencia.</li>`;
   document.querySelectorAll(".row").forEach(b=>b.onclick=()=>{sel=b.dataset.id;render();});
-  file(r); matrix(r);
+  file(r); matrix(r); agenda(r);
 }
 function file(r){
   const c=C.find(x=>x.id===sel); const pos=r.findIndex(x=>x.c.id===sel)+1; const t=total(c);
@@ -387,6 +425,7 @@ function file(r){
     </div>
     <div class="big num">${t.toFixed(1)}<small> / 10 · puesto ${pos} de ${C.length}</small></div>
   </div>
+  ${c.estado?`<div class="statusbox"><span class="status">${esc(c.estado.corto)}</span><span>${esc(c.estado.largo)}</span></div>`:""}
   <dl class="facts" style="margin:0">
     <div><dt>Edad</dt><dd>${esc(c.edad)}</dd></div>
     <div><dt>Comuna</dt><dd>${esc(c.comuna)}</dd></div>
@@ -410,8 +449,37 @@ function file(r){
 function matrix(r){
   const t=document.getElementById("matrix");
   t.innerHTML=`<thead><tr><th>Postulante</th>${DIMS.map(d=>`<th>${d.n}<br><span class="num" style="text-transform:none">${W[d.k]}%</span></th>`).join("")}<th>Total</th><th>Veredicto</th></tr></thead><tbody>`+
-  r.map(({c,t})=>`<tr class="clk${c.id===sel?" sel":""}" data-id="${c.id}"><td><b>${esc(c.nombre)}</b></td>${DIMS.map(d=>{const v=c.s[d.k];return `<td class="cell" style="background:${heat(v)};color:${v>=9?"var(--h-ink-dark)":"var(--ink)"}">${v}</td>`}).join("")}<td class="cell"><b>${t.toFixed(1)}</b></td><td><span class="verdict v-${c.verdict[0]}">${esc(c.verdict[1])}</span></td></tr>`).join("")+"</tbody>";
+  r.map(({c,t})=>`<tr class="clk${c.id===sel?" sel":""}" data-id="${c.id}"><td><b>${esc(c.nombre)}</b></td>${DIMS.map(d=>{const v=c.s[d.k];return `<td class="cell" style="background:${heat(v)};color:${v>=9?"var(--h-ink-dark)":"var(--ink)"}">${v}</td>`}).join("")}<td class="cell"><b>${t.toFixed(1)}</b></td><td><span class="verdict v-${c.verdict[0]}">${esc(c.verdict[1])}</span>${c.estado?`<br><span class="status">${esc(c.estado.corto)}</span>`:""}</td></tr>`).join("")+"</tbody>";
   t.querySelectorAll("tr.clk").forEach(tr=>tr.onclick=()=>{sel=tr.dataset.id;render();document.getElementById("file").scrollIntoView({behavior:"smooth",block:"start"});});
+}
+function agenda(r){
+  const el=document.getElementById("agenda");
+  const ags=AGENDA.slice().sort((a,b)=>toMin(a.hora)-toMin(b.hora));
+  const pos=id=>r.findIndex(x=>x.c.id===id)+1;
+  let rows="";
+  for(let m=DIA.desde;m<DIA.hasta;m+=DIA.paso){
+    const a=ags.find(x=>toMin(x.hora)===m);
+    const busy=ags.some(x=>m>toMin(x.hora)&&m<toMin(x.hora)+x.dur);
+    if(busy) continue;
+    if(a){const c=C.find(x=>x.id===a.id);
+      rows+=`<li class="slot"><span class="hr">${a.hora}</span><button class="appt" type="button" data-id="${c.id}"><span class="top"><span class="nm">${esc(c.nombre)}</span><span class="num meta">${a.hora}–${hm(toMin(a.hora)+a.dur)} · puesto ${pos(c.id)} · ${total(c).toFixed(1)}</span></span><span class="meta">${esc(c.titulo)} · ${esc(c.comuna)} · <span class="num">${esc(c.tel)}</span></span></button></li>`;
+    } else rows+=`<li class="slot"><span class="hr">${hm(m)}</span><span class="free">Libre</span></li>`;
+  }
+  const ag=new Set(AGENDA.map(a=>a.id));
+  const next=r.filter(x=>!ag.has(x.c.id)&&x.c.verdict[0]!=="alt").slice(0,3);
+  const guion=ags.map(a=>{const c=C.find(x=>x.id===a.id);
+    return `<div><h3>${a.hora} · ${esc(c.nombre)}</h3><ul class="checks">${a.preguntas.map(q=>`<li>${esc(q)}</li>`).join("")}</ul></div>`;}).join("");
+  el.innerHTML=`
+  <div class="dayhead"><div><div class="eyebrow">Agenda de entrevistas</div><h2>${DIA.fecha}</h2></div><span class="muted" style="font-size:.84rem">${AGENDA.length} entrevistas · bloques de ${DIA.paso} min</span></div>
+  <div class="agenda-grid">
+    <ol class="slots">${rows}</ol>
+    <div class="guion">
+      ${guion}
+      <div><h3>Para todas</h3><ul class="checks">${COMUNES.map(q=>`<li>${esc(q)}</li>`).join("")}</ul></div>
+      <div><h3>Siguientes a agendar</h3><ul class="next">${next.map(({c,t})=>`<li><span><b>${esc(c.nombre)}</b><br><span class="muted num">${esc(c.tel)}</span></span><span class="sc">${t.toFixed(1)}</span></li>`).join("")}</ul></div>
+    </div>
+  </div>`;
+  el.querySelectorAll(".appt").forEach(b=>b.onclick=()=>{sel=b.dataset.id;render();document.getElementById("file").scrollIntoView({behavior:"smooth",block:"start"});});
 }
 kpis();weights();chips();legend();render();
 </script>
