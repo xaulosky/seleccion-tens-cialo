@@ -107,6 +107,13 @@ details.wbox[open] summary::after{content:"Cerrar ▴"}
 .status{display:inline-flex;align-items:center;gap:6px;font-size:.76rem;font-weight:700;color:var(--good)}
 .status::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--good)}
 .statusbox{border:1px solid var(--good);border-radius:8px;padding:8px 12px;font-size:.88rem;display:grid;gap:2px}
+.status.pend{color:var(--warn)}
+.status.pend::before{background:transparent;border:1.5px solid var(--warn);width:5px;height:5px}
+.statusbox.pend{border-color:var(--warn);border-style:dashed}
+.appt.pend{background:transparent;border:1.5px dashed var(--warn)}
+.log{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:3px;font-size:.82rem}
+.log li{display:grid;grid-template-columns:86px minmax(0,1fr);gap:8px}
+.log .when{font-family:var(--mono);font-size:.74rem;color:var(--muted);padding-top:2px}
 .verdict{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:999px;border:1px solid currentColor}
 .v-top{color:var(--good)} .v-mid{color:var(--warn)} .v-low{color:var(--muted)} .v-alt{color:var(--rose)}
 
@@ -157,12 +164,12 @@ tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
 <div class="wrap">
   <header>
     <div class="eyebrow">Clínica CIALO · Proceso de selección · 1 oct 2026</div>
-    <h1>Selección TENS · 14 postulantes</h1>
+    <h1>Selección TENS · 15 postulantes</h1>
     <p>Puntaje ponderado sobre 10, pensado para una clínica estética y quirúrgica ambulatoria: pabellón menor, esterilización (con peso propio), apoyo en procedimientos y trato con pacientes particulares. Mueve los pesos si el cargo pide otra cosa (por ejemplo, más recepción y ventas).</p>
   </header>
 
   <section class="kpis" aria-label="Resumen">
-    <div class="kpi"><b class="num">14</b><span>CV recibidos · 13 TENS y 1 enfermera</span></div>
+    <div class="kpi"><b class="num">15</b><span>CV recibidos · 14 TENS y 1 enfermera</span></div>
     <div class="kpi"><b class="num" id="k-pab">0</b><span>con pabellón o esterilización real</span></div>
     <div class="kpi"><b class="num" id="k-priv">0</b><span>con trabajo en clínica o centro privado</span></div>
     <div class="kpi"><b class="num" id="k-disp">0</b><span>declaran disponibilidad inmediata</span></div>
@@ -217,7 +224,7 @@ const C=[
  plus:["Experiencia directa en centro médico privado de alto flujo","Esterilización y preparación de sala","Maneja caja, facturas y Excel: sirve también en recepción"],
  ojo:["Desde feb 2025 no trabaja como TENS clínica pura","Traslado diario desde Cabrero","Preguntar por qué dejó Integramédica"]},
 
-{id:"camila",nombre:"Camila Lillo Contreras",titulo:"TENS · CFT Santo Tomás (2019)",edad:"28",comuna:"Los Ángeles",tel:"+56 9 3442 3138",mail:"Camilalillo6@gmail.com",disp:"No indica (trabaja actualmente)",inmediata:false,
+{id:"camila",nombre:"Camila Lillo Contreras",titulo:"TENS · CFT Santo Tomás (2019)",edad:"28",comuna:"Los Ángeles",tel:"+56 9 3442 3138",mail:"camilalilloc26@gmail.com (CV: Camilalillo6@gmail.com)",disp:"Trabaja de 07:30 a 15:00 en Clínica Los Andes; puede después de las 15:00",inmediata:false,
  verdict:["top","Entrevistar"],
  resumen:"Cinco años y medio continuos en pabellón y recuperación de anestesia de Clínica Los Andes. Es el perfil quirúrgico privado más estable del grupo y conoce el estándar de una clínica particular de Los Ángeles.",
  tags:["Pabellón","Clínica privada","Paciente crítico","Adulto mayor"],
@@ -249,6 +256,17 @@ const C=[
  cursos:["RCP con DEA (32 h)","Cuidados críticos COVID (20 h)","ESI categorización (30 h)","IAAS (60 h y 20 h)","RCP básica CAVRR (27 h)","Humanización y calidad del trato (24 h)","Seguridad de la atención (2026)","Seguridad de la información (2026)","Diplomado de anestesia (en curso)"],
  plus:["La mejor formación continua del grupo","Diplomado de anestesia útil para procedimientos con sedación"],
  ojo:["Difícil que deje una contrata pública","No indica edad ni disponibilidad","CV extenso y poco sintético"]},
+
+{id:"nicolas",nombre:"Nicolás Vio Neira",titulo:"TENS e Instrumentación Quirúrgica · IP AIEP (2025)",edad:"—",comuna:"Los Ángeles",tel:"+56 9 4972 3248",mail:"Nicolas.vio2002@gmail.com",disp:"No indica",inmediata:false,
+ verdict:["mid","Entrevistar: esterilización"],
+ resumen:"Recién titulado en TENS con mención en instrumentación quirúrgica. Hizo su práctica en la Central de Esterilización y en Recuperación Postquirúrgica de Clínica Los Andes, y maneja autoclave, controles químicos y biológicos y trazabilidad por lote. No tiene experiencia pagada como TENS.",
+ tags:["Esterilización","Clínica privada","APS / CESFAM","Adulto mayor"],
+ s:{est:8,exp:4,afin:8,pub:4,form:8,disp:7,cv:6},
+ why:{est:"Práctica en Central de Esterilización: autoclave, controles fisicoquímicos y biológicos, trazabilidad por lote.",exp:"Todo como practicante (2023–2025). Antes, 2 años en mantención de equipos contra incendios.",afin:"Instrumentación quirúrgica, esterilización y recuperación postquirúrgica en clínica privada local.",pub:"Atención de usuarios en CESFAM. Inglés nivel C2.",form:"Título con mención en instrumentación, IAAS 90 h y RCP avanzado 120 h.",disp:"Vive en Los Ángeles; no indica cuándo podría empezar.",cv:"Bien estructurado, pero con cifras poco creíbles para una práctica."},
+ exp:[["mar–nov 2025","Practicante, Recuperación Postquirúrgica","Clínica Los Andes"],["nov 2024–mar 2025","Practicante, Central de Esterilización","Clínica Los Andes"],["ago–sep 2024","Practicante APS, vacunatorio","CESFAM Pallihue Sur"],["jun–ago 2023","Practicante, cuidados geriátricos","Residencia de adultos mayores"],["2021–2023","Técnico en operaciones (no clínico)","Equipos Contra Incendios Cerrillos SpA"]],
+ cursos:["Título TENS e Instrumentación Quirúrgica (AIEP, 2025)","IAAS 90 h","RCP avanzado 120 h","Inglés C2"],
+ plus:["Conoce el proceso completo de esterilización, incluido el control biológico","Mención en instrumentación quirúrgica: útil para procedimientos y cirugía menor","Disciplina de registro y trazabilidad por su trabajo anterior"],
+ ojo:["Toda su experiencia clínica es de práctica","Cifras del CV poco creíbles para un practicante (5.000 lotes, \"reduje 67% el riesgo\"): pedir que las explique","Su única referencia es de un trabajo no clínico: pedir una de Clínica Los Andes","Confirmar disponibilidad"]},
 
 {id:"melissa",nombre:"Melissa Ramírez Sepúlveda",titulo:"TENS · CFT Santo Tomás (2022)",edad:"38",comuna:"Los Ángeles",tel:"983958203",mail:"ramirezsepulvedamelissa@gmail.com",disp:"Desde 15 ago 2026 (ya disponible)",inmediata:true,
  verdict:["mid","Considerar"],
@@ -361,8 +379,14 @@ const C=[
  ojo:["No entrega correo ni año de titulación","Experiencia muy limitada"]}
 ];
 
-const DIA={fecha:"Viernes 2 de octubre de 2026",corto:"vie 2 oct",desde:9*60,hasta:13*60,paso:30};
+const DIA={lugar:"Clínica CIALO · Bulnes 220, oficina 509",fecha:"Viernes 2 de octubre de 2026",corto:"vie 2 oct",desde:9*60,hasta:17*60,paso:30};
 const AGENDA=[
+ {id:"javiera",hora:"11:00",dur:30,nota:"Confirmó asistencia por correo el 1 oct.",
+  historial:[["1 oct 16:04","Envía su CV por correo."],["1 oct 18:06","CIALO la invita a entrevista presencial mañana a las 11:00."],["1 oct 19:59","Confirma asistencia."]],
+  preguntas:["¿Sigues en Clínica Adventista? ¿Qué turno tienes y con cuánto aviso podrías salir?","¿Qué autoclave usas y cómo registras los controles químicos y biológicos de cada ciclo?","¿Puedes traer certificados de cursos IAAS y RCP? Tu CV no los menciona."]},
+ {id:"camila",hora:"16:00",dur:30,nota:"Confirmó asistencia por correo el 1 oct.",
+  historial:[["1 oct 15:45","Envía su CV por correo (camilalilloc26@gmail.com)."],["1 oct 18:02","CIALO la invita a entrevista presencial."],["1 oct 18:05","Responde que trabaja en pabellón de Clínica Los Andes de 07:30 a 15:00."],["1 oct 18:55","CIALO propone las 16:00."],["1 oct 19:50","Confirma: \"nos vemos\"."]],
+  preguntas:["¿Cuál es tu horario y tipo de contrato en Clínica Los Andes, y con cuánto aviso podrías salir?","¿Qué procedimientos has instrumentado o asistido en pabellón?","¿Has trabajado en esterilización o solo con material ya estéril?"]},
  {id:"ivett",hora:"10:00",dur:30,nota:"Contactada por teléfono el 1 oct.",
   preguntas:["¿Qué autoclave usaste en la clínica dental y cómo controlabas cada ciclo (indicadores químicos y biológicos, registro)?","¿Por qué saliste de Integramédica?","¿Cómo resolverías el traslado diario desde Cabrero?"]},
  {id:"yanez",hora:"10:30",dur:30,nota:"Agendada el 1 oct.",
@@ -370,9 +394,13 @@ const AGENDA=[
 ];
 const COMUNES=["Disponibilidad horaria, incluidos sábados","Fecha en que podría empezar","Expectativa de renta líquida","Traer título, registro en Superintendencia de Salud y certificados IAAS y RCP"];
 const hm=m=>String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
+const pill=e=>`<span class="status${e.pend?" pend":""}">${esc(e.corto)}</span>`;
+const logHtml=h=>h&&h.length?`<ul class="log">${h.map(x=>`<li><span class="when">${esc(x[0])}</span><span>${esc(x[1])}</span></li>`).join("")}</ul>`:"";
 const toMin=h=>{const [a,b]=h.split(":").map(Number);return a*60+b;};
 AGENDA.forEach(a=>{const c=C.find(x=>x.id===a.id); if(!c) return; const fin=hm(toMin(a.hora)+a.dur);
-  c.estado={corto:`Entrevista ${DIA.corto} · ${a.hora}`,largo:`${a.nota} Entrevista el ${DIA.fecha.toLowerCase()}, de ${a.hora} a ${fin}.`};});
+  c.estado=a.pendiente
+    ?{pend:true,corto:`Por confirmar · ${DIA.corto} ${a.hora}`,largo:`${a.nota} Horario reservado el ${DIA.fecha.toLowerCase()}, de ${a.hora} a ${fin}. No citar a otra persona en ese bloque.`,historial:a.historial}
+    :{corto:`Entrevista ${DIA.corto} · ${a.hora}`,largo:`${a.nota} Entrevista el ${DIA.fecha.toLowerCase()}, de ${a.hora} a ${fin}.`,historial:a.historial};});
 
 let W={}; DIMS.forEach(d=>W[d.k]=d.w);
 let sel="ivett", filter=null;
@@ -409,7 +437,7 @@ function render(){
   document.getElementById("rank").innerHTML=list.map(({c,t})=>{
     const pos=r.findIndex(x=>x.c.id===c.id)+1;
     const segs=DIMS.map(d=>`<i style="width:${(c.s[d.k]*W[d.k]/sw)*10}%;background:${d.c}" title="${d.n}: ${c.s[d.k]}"></i>`).join("");
-    return `<li><button class="row${c.id===sel?" sel":""}" type="button" data-id="${c.id}"><span class="pos">${pos}</span><span class="who"><span class="n">${esc(c.nombre)}</span>${c.estado?`<span class="status">${esc(c.estado.corto)}</span>`:`<span class="t">${esc(c.titulo)}</span>`}<span class="stack">${segs}</span></span><span class="score">${t.toFixed(1)}</span></button></li>`;
+    return `<li><button class="row${c.id===sel?" sel":""}" type="button" data-id="${c.id}"><span class="pos">${pos}</span><span class="who"><span class="n">${esc(c.nombre)}</span>${c.estado?pill(c.estado):`<span class="t">${esc(c.titulo)}</span>`}<span class="stack">${segs}</span></span><span class="score">${t.toFixed(1)}</span></button></li>`;
   }).join("")||`<li class="muted" style="padding:8px">Nadie tiene esa experiencia.</li>`;
   document.querySelectorAll(".row").forEach(b=>b.onclick=()=>{sel=b.dataset.id;render();});
   file(r); matrix(r); agenda(r);
@@ -425,7 +453,7 @@ function file(r){
     </div>
     <div class="big num">${t.toFixed(1)}<small> / 10 · puesto ${pos} de ${C.length}</small></div>
   </div>
-  ${c.estado?`<div class="statusbox"><span class="status">${esc(c.estado.corto)}</span><span>${esc(c.estado.largo)}</span></div>`:""}
+  ${c.estado?`<div class="statusbox${c.estado.pend?" pend":""}">${pill(c.estado)}<span>${esc(c.estado.largo)}</span>${logHtml(c.estado.historial)}</div>`:""}
   <dl class="facts" style="margin:0">
     <div><dt>Edad</dt><dd>${esc(c.edad)}</dd></div>
     <div><dt>Comuna</dt><dd>${esc(c.comuna)}</dd></div>
@@ -449,28 +477,32 @@ function file(r){
 function matrix(r){
   const t=document.getElementById("matrix");
   t.innerHTML=`<thead><tr><th>Postulante</th>${DIMS.map(d=>`<th>${d.n}<br><span class="num" style="text-transform:none">${W[d.k]}%</span></th>`).join("")}<th>Total</th><th>Veredicto</th></tr></thead><tbody>`+
-  r.map(({c,t})=>`<tr class="clk${c.id===sel?" sel":""}" data-id="${c.id}"><td><b>${esc(c.nombre)}</b></td>${DIMS.map(d=>{const v=c.s[d.k];return `<td class="cell" style="background:${heat(v)};color:${v>=9?"var(--h-ink-dark)":"var(--ink)"}">${v}</td>`}).join("")}<td class="cell"><b>${t.toFixed(1)}</b></td><td><span class="verdict v-${c.verdict[0]}">${esc(c.verdict[1])}</span>${c.estado?`<br><span class="status">${esc(c.estado.corto)}</span>`:""}</td></tr>`).join("")+"</tbody>";
+  r.map(({c,t})=>`<tr class="clk${c.id===sel?" sel":""}" data-id="${c.id}"><td><b>${esc(c.nombre)}</b></td>${DIMS.map(d=>{const v=c.s[d.k];return `<td class="cell" style="background:${heat(v)};color:${v>=9?"var(--h-ink-dark)":"var(--ink)"}">${v}</td>`}).join("")}<td class="cell"><b>${t.toFixed(1)}</b></td><td><span class="verdict v-${c.verdict[0]}">${esc(c.verdict[1])}</span>${c.estado?`<br>${pill(c.estado)}`:""}</td></tr>`).join("")+"</tbody>";
   t.querySelectorAll("tr.clk").forEach(tr=>tr.onclick=()=>{sel=tr.dataset.id;render();document.getElementById("file").scrollIntoView({behavior:"smooth",block:"start"});});
 }
 function agenda(r){
   const el=document.getElementById("agenda");
   const ags=AGENDA.slice().sort((a,b)=>toMin(a.hora)-toMin(b.hora));
   const pos=id=>r.findIndex(x=>x.c.id===id)+1;
-  let rows="";
+  let rows="", freeFrom=null;
+  const flush=end=>{ if(freeFrom===null) return;
+    rows+=`<li class="slot"><span class="hr">${hm(freeFrom)}</span><span class="free">${end-freeFrom>DIA.paso?`Libre hasta las ${hm(end)}`:"Libre"}</span></li>`; freeFrom=null; };
   for(let m=DIA.desde;m<DIA.hasta;m+=DIA.paso){
     const a=ags.find(x=>toMin(x.hora)===m);
     const busy=ags.some(x=>m>toMin(x.hora)&&m<toMin(x.hora)+x.dur);
     if(busy) continue;
-    if(a){const c=C.find(x=>x.id===a.id);
-      rows+=`<li class="slot"><span class="hr">${a.hora}</span><button class="appt" type="button" data-id="${c.id}"><span class="top"><span class="nm">${esc(c.nombre)}</span><span class="num meta">${a.hora}–${hm(toMin(a.hora)+a.dur)} · puesto ${pos(c.id)} · ${total(c).toFixed(1)}</span></span><span class="meta">${esc(c.titulo)} · ${esc(c.comuna)} · <span class="num">${esc(c.tel)}</span></span></button></li>`;
-    } else rows+=`<li class="slot"><span class="hr">${hm(m)}</span><span class="free">Libre</span></li>`;
+    if(a){ flush(m); const c=C.find(x=>x.id===a.id);
+      rows+=`<li class="slot"><span class="hr">${a.hora}</span><button class="appt${a.pendiente?" pend":""}" type="button" data-id="${c.id}"><span class="top"><span class="nm">${esc(c.nombre)}</span><span class="num meta">${a.hora}–${hm(toMin(a.hora)+a.dur)} · puesto ${pos(c.id)} · ${total(c).toFixed(1)}</span></span>${a.pendiente?pill(c.estado):""}<span class="meta">${esc(c.titulo)} · ${esc(c.comuna)} · <span class="num">${esc(c.tel)}</span></span>${a.pendiente?`<span class="meta">${esc(a.historial[a.historial.length-1][1])}</span>`:""}</button></li>`;
+    } else if(freeFrom===null) freeFrom=m;
   }
+  flush(DIA.hasta);
+  const nConf=AGENDA.filter(a=>!a.pendiente).length, nPend=AGENDA.length-nConf;
   const ag=new Set(AGENDA.map(a=>a.id));
   const next=r.filter(x=>!ag.has(x.c.id)&&x.c.verdict[0]!=="alt").slice(0,3);
   const guion=ags.map(a=>{const c=C.find(x=>x.id===a.id);
-    return `<div><h3>${a.hora} · ${esc(c.nombre)}</h3><ul class="checks">${a.preguntas.map(q=>`<li>${esc(q)}</li>`).join("")}</ul></div>`;}).join("");
+    return `<div><h3>${a.hora} · ${esc(c.nombre)}${a.pendiente?" (por confirmar)":""}</h3><ul class="checks">${a.preguntas.map(q=>`<li>${esc(q)}</li>`).join("")}</ul></div>`;}).join("");
   el.innerHTML=`
-  <div class="dayhead"><div><div class="eyebrow">Agenda de entrevistas</div><h2>${DIA.fecha}</h2></div><span class="muted" style="font-size:.84rem">${AGENDA.length} entrevistas · bloques de ${DIA.paso} min</span></div>
+  <div class="dayhead"><div><div class="eyebrow">Agenda de entrevistas</div><h2>${DIA.fecha}</h2><div class="muted" style="font-size:.84rem">${esc(DIA.lugar)}</div></div><span class="muted" style="font-size:.84rem">${nConf} confirmadas${nPend?` · ${nPend} por confirmar`:""} · bloques de ${DIA.paso} min</span></div>
   <div class="agenda-grid">
     <ol class="slots">${rows}</ol>
     <div class="guion">
